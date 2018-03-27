@@ -12,20 +12,34 @@
         - ppa:team-xbmc/ppa
         - ppa:mdeslaur/steamos
         - ppa:ubuntu-x-swat/updates
-#steam needs eula fix https://askubuntu.com/questions/506909/how-can-i-accept-the-lience-agreement-for-steam-prior-to-apt-get-install?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
   - name: Update repositories cache and install packages in items
     apt:
       name: "{{ item }}"
       update_cache: yes
       state: present
     with_items:
-        - steam
         - kodi
-        - xorg
         - steamos-xpad-dkms
-        - lightdm
-        - fluxbox
-        - nautilus
+  - name: Upgrade all packages
+    apt:
+      upgrade: yes
+  - name: set repo settings for steam agree
+    debconf: 
+      name: steam
+      question: steam/question
+      value: 'I AGREE'
+      vtype: select
+  - name: set repo settings for steam license
+    debconf:
+      name: steam
+      question: steam/license
+      value: ''
+      vtype: note
+  - name: install steam
+    apt:
+      name: steam
+      update_cache: yes
+      state: present
   - name: Download MediaPC script
     get_url:
       url: https://raw.githubusercontent.com/Mossman1215/MediaPC-Script/master/loadAProgramLoop.sh
